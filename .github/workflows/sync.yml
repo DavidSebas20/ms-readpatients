@@ -42,7 +42,7 @@ jobs:
             git push origin ${{ github.ref_name }}
           else
             git checkout ${{ github.ref_name }}
-            git pull --rebase origin ${{ github.ref_name }}
+            git pull --rebase origin ${{ github.ref_name }} || git rebase --abort
           fi
 
       - name: Commit and push changes
@@ -56,4 +56,4 @@ jobs:
             exit 0
           fi
           git commit -m "Sync ms-readpatients: ${CHANGED_FILES}"
-          git push origin ${{ github.ref_name }}
+          git push origin ${{ github.ref_name }} || (git pull --rebase origin ${{ github.ref_name }} && git push origin ${{ github.ref_name }} --force)
