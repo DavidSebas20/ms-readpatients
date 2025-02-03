@@ -36,13 +36,15 @@ jobs:
       - name: Ensure branch exists in domain repository
         run: |
           cd domain_repo
-          git fetch origin
-          if ! git show-ref --verify --quiet refs/heads/${{ github.ref_name }}; then
+          git fetch --all
+
+          if ! git rev-parse --verify ${{ github.ref_name }} >/dev/null 2>&1; then
             git checkout -b ${{ github.ref_name }}
             git push origin ${{ github.ref_name }}
           else
             git checkout ${{ github.ref_name }}
-            git pull --rebase origin ${{ github.ref_name }} || git rebase --abort
+            git reset --hard origin/${{ github.ref_name }}
+            git pull --rebase origin/${{ github.ref_name }} || git rebase --abort
           fi
 
       - name: Commit and push changes
